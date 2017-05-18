@@ -7,59 +7,64 @@
 //
 //  comments:
 //      list length is unknown
+//      if the list is empty the answer will be IMPOSSIBLE INPUT
 //      if K is bigger than the size of the list the answer will be IMPOSSIBLE INPUT
+//      if K<0: also IMPOSSIBLE INPUT
 //      KthToLast function contains a solution
 //
 
 #include <iostream>
 #include <vector>
 
-
+template <typename T>
 struct Node {
-    char value;
+    T value;
     Node* next;
 };
 
-Node* CreateSinglyLinkedList() {
-    Node *Head = new Node;
+template <typename T>
+Node<T>* CreateSinglyLinkedList() {
+    Node<T> *Head = new Node<T>;
+    std::cout << "Enter a list of elements" << std::endl;
     std::cin >> Head->value;
-    Node *elem1 = Head;
-    Node *elem2 = new Node;
+    Node<T> *elem1 = Head;
+    Node<T> *elem2 = new Node<T>;
     while (std::cin >> elem2->value) {
         elem1->next = elem2;
         elem1 = elem2;
-        elem2 = new Node;
+        elem2 = new Node<T>;
     }
     elem1->next = NULL;
-    return (Head);
+    return Head;
 };
 
-Node* KthToLast(Node* Head, int K, bool &problem) {
-    Node* Elem = Head;
+template <typename T>
+Node<T>* KthToLast(Node<T>* Head, int K) {
+    if (K < 0 || Head->value == NULL)
+        return NULL;
+    Node<T>* Elem = Head;
     // pass through the list till K nodes are passed
     for (int i = 0; i < K; ++i) {
         if (Elem->next != NULL)
             Elem = Elem->next;
-        else { // K is bigger than the list length
-            problem = true;
-            std::cout << "IMPOSSIBLE INPUT" << std::endl;
-            return Elem;
-        }
+        else // K is bigger than the list length
+            return NULL;
     }
     // Now we use another pointer with the same speed,
-    // that stars from the Head
-    Node *FutureResult = Head;
+    // that starts from the Head
+    Node<T> *FutureResult = Head;
     // When the first pointer reaches the end of the list
     // The second pointer points at the answer
     while (Elem->next != NULL){
         Elem = Elem->next;
         FutureResult = FutureResult->next;
     }
-    return (FutureResult);
+    return FutureResult;
 }
 
-void ClearMemory(Node* Head) {
-    Node* Next = Head;
+template <typename T>
+void ClearMemory(Node<T>* Head) {
+    Node<T>* Next = Head;
     while (Next->next != NULL) {
         Head = Next->next;
         delete Next;
@@ -67,17 +72,27 @@ void ClearMemory(Node* Head) {
     }
 }
 
-int main() {
+template <typename T>
+void MainFunction() {
     // input Data
+    std::cout << "enter a positive integer" << std::endl;
     int K;
     std::cin >> K;
-    Node* Head = CreateSinglyLinkedList();
+    Node<T>* Head = CreateSinglyLinkedList<T>();
     // main part
-    bool problem = false; // is used to check if the input is valid
-    Node* Result = KthToLast(Head, K, problem);
+    Node<T>* Result = KthToLast(Head, K);
     // result
-    if (!problem)
+    if (Result == NULL)
+        std::cout << "IMPOSSIBLE INPUT" << std::endl;
+    else
         std::cout << Result->value << std::endl;
     ClearMemory(Head);
+}
+
+int main() {
+    std::cout << "enter type" << std::endl;
+    std::string type;
+    std::cin >> type;
+    MainFunction<char>();
     return 0;
 }
