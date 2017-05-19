@@ -40,7 +40,7 @@ Node<T>* CreateSinglyLinkedList() {
 
 template <typename T>
 Node<T>* KthToLast(Node<T>* Head, int K) {
-    if (K < 0 || Head->value == NULL)
+    if (K < 0 || Head == NULL)
         return NULL;
     Node<T>* Elem = Head;
     // pass through the list till K nodes are passed
@@ -72,27 +72,19 @@ void ClearMemory(Node<T>* Head) {
     }
 }
 
-template <typename T>
-void MainFunction() {
+int main() {
     // input Data
     std::cout << "enter a positive integer" << std::endl;
     int K;
     std::cin >> K;
-    Node<T>* Head = CreateSinglyLinkedList<T>();
+    Node<char>* Head = CreateSinglyLinkedList<char>();
     // main part
-    Node<T>* Result = KthToLast(Head, K);
+    Node<char>* Result = KthToLast(Head, K);
     // result
     if (Result == NULL)
         std::cout << "IMPOSSIBLE INPUT" << std::endl;
     else
         std::cout << Result->value << std::endl;
     ClearMemory(Head);
-}
-
-int main() {
-    std::cout << "enter type" << std::endl;
-    std::string type;
-    std::cin >> type;
-    MainFunction<char>();
     return 0;
 }
