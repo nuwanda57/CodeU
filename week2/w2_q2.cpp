@@ -13,17 +13,13 @@
 //      output data:
 //          Common Ancestor
 //      Complexity:
-//          O(N^2) in a very bad case: (almost every vertex has the only one child
+//          O(N) in a very bad case: (almost every vertex has the only one child
 //          and the number of left children of the Root is almost equal to the number of it's right children)
-//          Common Case (almost every vertex has two children): O((log(n))^2)
-//          We can achieve better results by storing additional nodes.
+//          Common Case (almost every vertex has two children): O(log(n))
 //      Idea:
-//          At the beginning we have two nodes (N1, N2). Then we start moving them up to the root.
-//          One of them (N2) moves faster: we check if N1 equals to N2 or all of it's ancestor.
-//          The we move N1 one level up (N1 = N1->parent) and return N2 to it's start position.
-//          And do the same: check if this N1 (N1->parent) equals to N2 or any of it's ancestors.
-//          We do this till N1 != Root->parent = NULL
-//          Thus we've checked every possibility
+//          At the beginning we have two nodes (N1, N2). N1 equals to N2 only if
+//          they are at the same level from the Root. So we move them to the same level
+//          and them move them every step up together till their values are the same.
 //
 
 
@@ -41,15 +37,33 @@ void PrintCommonAncestor(BinaryTree &MyBTree, int key1, int key2) {
         std::cout << "Impossible input" << std::endl;
         return;
     }
-    Node *MovingN2 = N2;
-    while (N1 != NULL) {
-        while (MovingN2 != NULL && N1->name != MovingN2->name)
-            MovingN2 = MovingN2->parent;
-        if (MovingN2 != NULL && MovingN2->name == N1->name) {
-            std::cout << "Their common ancestor is: " << N1->name;
-            return;
-        }
-        MovingN2 = N2;
-        N1 = N1->parent;
+    // lets count the lengths of paths from N1 and N2 to the Root
+    int N1Level = 0;
+    int N2Level = 0;
+    Node* vN1 = N1;
+    Node* vN2 = N2;
+    // count N1Level, N2Level
+    while (vN1->parent != NULL) {
+        ++N1Level;
+        vN1 = vN1->parent;
     }
+    while (vN2->parent != NULL) {
+        ++N2Level;
+        vN2 = vN2->parent;
+    }
+    // move the vertexes to the same level
+    while (N1Level > N2Level) {
+        N1 = N1->parent;
+        --N1Level;
+    }
+    while (N2Level > N1Level) {
+        N2 = N2->parent;
+        --N2Level;
+    }
+    // find common ancestor
+    while (N1->name != N2->name) {
+        N1 = N1->parent;
+        N2 = N2->parent;
+    }
+    std::cout << "Their common ancestor is: " << N1->name;
 }
