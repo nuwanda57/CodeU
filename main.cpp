@@ -1,58 +1,71 @@
-//CodeU: Q1
+//CodeU: Assignment2-Q1
 //
-//  Created by Julia Semavina on 17.05.2017
+//  Created by Julia Semavina on 22.05.2017
 //
 //  problem specification:
-//      Given two strings, write a method to decide if one is a permutation of the other
+//      Given a Binary Tree and a key, write a function that prints all the ancestors of the key
+//      in the given binary tree.
 //
 //  comments:
-//      register is ignored
+//      Data Structures: Node ("Node.h"), BinaryTree (BinaryTree.h")
+//      input data:
+//          1) Number of vertexes (must be positive integer)
+//          2) List of vertexes (all of the vertexes must be different integers)
+//          3) Any vertex from the list
+//      output data:
+//          all the ancestors of the vertex, started with parent
+//      ShowAncestors function contains a solution
 //
 
+
 #include <iostream>
-#include <map>
+#include <vector>
+#include <set>
+
+#include "BinaryTree.h"
 
 
-char lowercase(char a) {
-    if (a <= 'Z' && a >= 'A')
-        return (a - ('Z' - 'z'));
-    return a;
-}
-
-bool is_permutation(std::string &A, std::string &B) {
-    // check if the lengths are equal
-    if (A.length() != B.length())
-        return false;
-    // make a dictionary from string A,
-    // keys - different elements of string A
-    // values - number of each key in string A
-    std::map<char, int> A_elements;
-    char x;
-    for (int i = 0; i < A.length(); ++i) {
-        x = lowercase(A[i]);
-        if (A_elements.find(x) == A_elements.end())
-            A_elements[x] = 1;
-        else
-            A_elements[x] += 1;
+void ShowAncestors(BinaryTree &MyBTree, int key) {
+    Node* Starter = MyBTree.find(key);
+    if (Starter == NULL) // There is no Node with a name equals to the key
+        std::cout << "This vertex doesn't exist!" << std::endl;
+    else {
+        while (Starter->parent != NULL) { // while Starter is not Root
+            Starter = Starter->parent;
+            std::cout << Starter->name << " ";
+        }
+        std::cout << std::endl;
     }
-    // check if string B consists of elements in the dictionary
-    for (int i = 0; i < B.length(); ++i) {
-        x = lowercase(B[i]);
-        if (A_elements.find(x) == A_elements.end())
-            return false;
-        if (A_elements[x] == 0)
-            return false;
-        A_elements[x]--;
-    }
-    return true;
 }
 
 int main() {
-    std::string A, B;
-    std::cin >> A >> B;
-    if (is_permutation(A, B))
-        std::cout << "Yes";
-    else
-        std::cout << "No";
+    // Create a Binary Tree
+    std::cout << "Enter number of vertexes: ";
+    int N;
+    BinaryTree MyBTree;
+    std::cin >> N;
+    if (N <= 0) {
+        std::cout << "Impossible input!" << std::endl;
+        return 0;
+    }
+    std::set<int> Vertexes;
+    std::cout << std::endl;
+    std::cout << "Enter different vertexes: ";
+    int node;
+    for (int i = 0; i < N; ++i) {
+        std::cin >> node;
+        Vertexes.insert(node);
+        MyBTree.insert(node);
+    }
+    if (Vertexes.size() != N) {
+        std::cout << "Vertexes must be different" << std::endl;
+        return 0;
+    }
+
+    // show ancestors
+    std::cout << "Enter a vertex: ";
+    int key;
+    std::cin >> key;
+    ShowAncestors(MyBTree, key);
     return 0;
 }
