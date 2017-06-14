@@ -5,14 +5,22 @@
 #include "word.h"
 
 
-word::word(std::string object) {
-    object_ = object;
+Dictionary::Dictionary() {
 }
 
-const bool word::is_word(std::set<std::string> TheDictionary) {
-    return TheDictionary.find(object_) != TheDictionary.end();
+const bool Dictionary::is_word(std::string word) {
+    return Self_.find(word) != Self_.end();
 }
 
-const bool word::is_prefix(std::set<std::string> Prefixes) {
-    return Prefixes.find(object_) != Prefixes.end();
+const bool Dictionary::is_prefix(std::string word) {
+    return Prefixes_.find(word) != Prefixes_.end();
+}
+
+void Dictionary::insert(std::string word) {
+    Self_.insert(word);
+    std::string word1 = "";
+    for (int i = 0; i < word.length(); ++i) {
+        word1 = word1 + word[i];
+        Prefixes_.insert(word1);
+    }
 }
