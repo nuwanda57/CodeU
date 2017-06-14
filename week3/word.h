@@ -9,14 +9,16 @@
 #include <set>
 
 
-class word {
+class Dictionary {
 private:
-    std::string object_;
+    std::set<std::string> Self_;
+    std::set<std::string> Prefixes_;
 public:
-    word(std::string object);
+    Dictionary();
 
-    const bool is_word(std::set<std::string> TheDictionary);
-    const bool is_prefix(std::set<std::string> Prefixes);
+    const bool is_word(std::string word);
+    const bool is_prefix(std::string word);
+    void insert(std::string word);
 };
 
 
