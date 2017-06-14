@@ -27,72 +27,63 @@
 
 
 void WordsFromPrefix(int index, std::string prefix, int NumberOfColumns, int NumberOfRows, char * Grid,
-                     std::set<std::string> &TheDictionary, std::set<std::string> & Prefixes,
+                     Dictionary &TheDictionary,
                      std::set<std::string> &Answer, std::set<std::pair<int, std::string>> &SamePaths) {
     if (SamePaths.find(std::pair<int, std::string>(index, prefix)) != SamePaths.end()) { //already checked
         return;
     }
-    word w_prefix = word(prefix);
     SamePaths.insert(std::pair<int, std::string>(index, prefix));
-    if(w_prefix.is_word(TheDictionary)) { // Word from the dictionary
+    if(TheDictionary.is_word(prefix)) { // Word from the dictionary
         Answer.insert(prefix);
     }
-    if(w_prefix.is_prefix(Prefixes)) { // continue searching
-        if (index % NumberOfColumns != 0) { // West
+    if(TheDictionary.is_prefix(prefix)) { // continue searching
+        int x = index % NumberOfColumns;
+        int y = index / NumberOfColumns;
+        if (x != 0) { // West
             WordsFromPrefix(index - 1, prefix + Grid[index - 1], NumberOfColumns, NumberOfRows, Grid,
-                            TheDictionary, Prefixes, Answer, SamePaths);
-            if (index / NumberOfColumns != 0) { // North-West
-                WordsFromPrefix(index - 1 - NumberOfColumns, prefix + Grid[index - 1 - NumberOfColumns],
-                                NumberOfColumns, NumberOfRows, Grid, TheDictionary, Prefixes, Answer, SamePaths);
-            }
-            if (index / NumberOfColumns != NumberOfRows - 1) { // South-West
-                WordsFromPrefix(index - 1 + NumberOfColumns, prefix + Grid[index - 1 + NumberOfColumns], NumberOfColumns, NumberOfRows, Grid,
-                                TheDictionary, Prefixes, Answer, SamePaths);
-            }
+                            TheDictionary, Answer, SamePaths);
         }
-        if (index % NumberOfColumns != NumberOfColumns - 1) { // East
+        if (x != 0 && y != 0) { // North-West
+            WordsFromPrefix(index - 1 - NumberOfColumns, prefix + Grid[index - 1 - NumberOfColumns],
+                            NumberOfColumns, NumberOfRows, Grid, TheDictionary, Answer, SamePaths);
+        }
+        if (x != 0 && y != NumberOfRows - 1) { // South-West
+            WordsFromPrefix(index - 1 + NumberOfColumns, prefix + Grid[index - 1 + NumberOfColumns],
+                            NumberOfColumns, NumberOfRows, Grid, TheDictionary, Answer, SamePaths);
+        }
+        if (x != NumberOfColumns - 1) { // East
             WordsFromPrefix(index + 1, prefix + Grid[index + 1], NumberOfColumns, NumberOfRows, Grid,
-                            TheDictionary, Prefixes, Answer, SamePaths);
-            if (index / NumberOfColumns != 0) { // North-East
-                WordsFromPrefix(index + 1 - NumberOfColumns, prefix + Grid[index + 1 - NumberOfColumns],
-                                NumberOfColumns, NumberOfRows, Grid, TheDictionary, Prefixes, Answer, SamePaths);
-            }
-            if (index / NumberOfColumns != NumberOfRows - 1) { // South-East
-                WordsFromPrefix(index + 1 + NumberOfColumns, prefix + Grid[index + 1 + NumberOfColumns], NumberOfColumns, NumberOfRows, Grid,
-                                TheDictionary, Prefixes, Answer, SamePaths);
-            }
+                            TheDictionary, Answer, SamePaths);
         }
-        if (index / NumberOfColumns != 0) { //North
+        if (x != NumberOfColumns - 1 && y != 0) { // North-East
+            WordsFromPrefix(index + 1 - NumberOfColumns, prefix + Grid[index + 1 - NumberOfColumns], NumberOfColumns,
+                            NumberOfRows, Grid, TheDictionary, Answer, SamePaths);
+        }
+        if (x != NumberOfColumns - 1 && y != NumberOfRows - 1) { // South-East
+            WordsFromPrefix(index + 1 + NumberOfColumns, prefix + Grid[index + 1 + NumberOfColumns], NumberOfColumns,
+                            NumberOfRows, Grid, TheDictionary, Answer, SamePaths);
+        }
+        if (y != 0) { //North
             WordsFromPrefix(index - NumberOfColumns, prefix + Grid[index - NumberOfColumns],
-                            NumberOfColumns, NumberOfRows, Grid, TheDictionary, Prefixes, Answer, SamePaths);
+                            NumberOfColumns, NumberOfRows, Grid, TheDictionary, Answer, SamePaths);
         }
-        if (index / NumberOfColumns != NumberOfRows - 1) { // South
+        if (y != NumberOfRows - 1) { // South
             WordsFromPrefix(index + NumberOfColumns, prefix + Grid[index + NumberOfColumns],
-                            NumberOfColumns, NumberOfRows, Grid, TheDictionary, Prefixes, Answer, SamePaths);
+                            NumberOfColumns, NumberOfRows, Grid, TheDictionary, Answer, SamePaths);
         }
     }
 }
 
 
 std::set<std::string> WordsFound(int NumberOfRows, int NumberOfColumns, char* Grid,
-                                 std::set<std::string> &TheDictionary) {
-    // build prefixes
-    std::set<std::string> Prefixes;
-    std::string word1 = "";
-    for(std::set<std::string>::iterator it = TheDictionary.begin(); it != TheDictionary.end(); it++) {
-        word1 = "";
-        for(int i = 0; i < (*it).length(); ++i) {
-            word1 = word1 + (*it)[i];
-            Prefixes.insert(word1);
-        }
-    }
+                                 Dictionary &TheDictionary) {
     // launch search from every cell
     std::set<std::string> Answer;
-    word1 = "";
+    std::string word1 = "";
     std::set<std::pair<int, std::string>> SamePaths;
     for(int i = 0; i < NumberOfColumns*NumberOfRows; ++i) {
         word1 = Grid[i];
-        WordsFromPrefix(i, word1, NumberOfColumns, NumberOfRows, Grid, TheDictionary, Prefixes, Answer, SamePaths);
+        WordsFromPrefix(i, word1, NumberOfColumns, NumberOfRows, Grid, TheDictionary, Answer, SamePaths);
     }
     return Answer;
 }
@@ -120,7 +111,7 @@ int main() {
     std::cin >> NumberOfWordsInTheDictionary;
     std::cout << std::endl;
     std::cout << "Enter the words from the dictionary" << std::endl;
-    std::set<std::string> TheDictionary;
+    Dictionary TheDictionary;
     std::string word;
     for(int i = 0; i < NumberOfWordsInTheDictionary; ++i) {
         std::cin >> word;
@@ -129,8 +120,8 @@ int main() {
 
     // solution
     std::set<std::string> Answer = WordsFound(NumberOfRows, NumberOfColumns, Grid, TheDictionary);
-    for(std::set<std::string>::iterator it = Answer.begin(); it != Answer.end(); it++) {
-        std::cout << *it << " ";
+    for(const std::string &ans: Answer) {
+        std::cout << ans << " ";
     }
 
 
