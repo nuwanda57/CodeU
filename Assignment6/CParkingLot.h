@@ -8,7 +8,6 @@
 class CParkingLot {
 private:
     int NumberOfPlaces_;
-    int CarsToRearrange_;
     int ResultingZeroPlace_; // the number of place that must be empty after the rearrangement
     std::vector<std::pair<int, int>> Rearranging_; // answer
     std::map<int, int> PlacesToCars_;
