@@ -4,7 +4,6 @@
 CParkingLot::CParkingLot() {
     std::cout << "How many places are in the parking lot?" << std::endl;
     std::cin >> NumberOfPlaces_;
-    CarsToRearrange_ = NumberOfPlaces_ - 1;
 
     if (NumberOfPlaces_ > 0) {
         std::cout << "Describe the parking lot" << std::endl;
@@ -38,7 +37,6 @@ CParkingLot::CParkingLot(std::vector<int> &FirstState, std::vector<int> &SecondS
         ResultingCarsToPlaces_[SecondState[place]] = place;
     }
     ResultingZeroPlace_ = ResultingCarsToPlaces_[0];
-    CarsToRearrange_ = NumberOfPlaces_ - 1;
 }
 
 
@@ -48,33 +46,26 @@ void CParkingLot::rotate() {
     while (zero_place != ResultingZeroPlace_) {
         car_to_move = ResultingPlacesToCars_[zero_place];
         place_from_move = CarsToPlaces_[car_to_move];
-        CarsToPlaces_.erase(car_to_move);
-        PlacesToCars_.erase(zero_place);
         Rearranging_.push_back(std::pair<int, int>(place_from_move, zero_place));
-        zero_place = place_from_move;
         CarsToPlaces_[0] = place_from_move;
-        --CarsToRearrange_;
+        CarsToPlaces_[car_to_move] = zero_place;
+        PlacesToCars_[place_from_move] = 0;
+        PlacesToCars_[zero_place] = car_to_move;
+        zero_place = place_from_move;
     }
 }
 
 
 void CParkingLot::rearrange() {
     Rearranging_.clear();
-    CarsToRearrange_ = NumberOfPlaces_ - 1;
     std::map<int,int>::iterator it;
     rotate();
     int car_to_move, zero_place, place_from_move;
-    while (CarsToRearrange_ > 0) { // searching for new cycle to rotate
-        it = CarsToPlaces_.begin();
-        while (it->first == 0) {
-            ++it;
-        }
+    for (it = CarsToPlaces_.begin(); it != CarsToPlaces_.end(); ++it) { // searching for new cycle to rotate
         car_to_move = it->first;
         if (CarsToPlaces_[car_to_move] == ResultingCarsToPlaces_[car_to_move]) {
             // the car is already in the right place
-            PlacesToCars_.erase(CarsToPlaces_[car_to_move]);
-            CarsToPlaces_.erase(car_to_move);
-            --CarsToRearrange_;
+            continue;
         } else {
             // the car is in a wrong place
             // we need to make it possible to put it in the right place
