@@ -22,12 +22,12 @@
 
 
 #include "CParkingLot.h"
-//#include "tests.h"
+#include "tests.h"
 
 
 int main() {
-    CParkingLot ParkingLot;
-    ParkingLot.how_to_rearrange();
-    //AllTests();
+    //CParkingLot ParkingLot;
+    //ParkingLot.how_to_rearrange();
+    AllTests();
     return 0;
 }
